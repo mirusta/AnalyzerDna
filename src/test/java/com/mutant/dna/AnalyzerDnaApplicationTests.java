@@ -30,6 +30,7 @@ public class AnalyzerDnaApplicationTests {
 
 	}
 
+/*
 	@Test
 	void isHumanOrIsAlreadyExist() throws Exception {
 		String[] dnaH = { "AAAAAA", "TCCTTC", "GTCTGG", "TGTTTG", "ACAGTA", "ACTCAG" };
@@ -96,5 +97,7 @@ public class AnalyzerDnaApplicationTests {
 		System.out.println(stats.toString());
 
 	}
+	
+	*/
 
 }
