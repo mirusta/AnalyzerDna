@@ -44,81 +44,88 @@ public class DnaServiceImpl implements DnaService {
 		long start = System.currentTimeMillis();
 
 		log.info("Validando duplicado");
+		Optional<TabDna> op = null;
+		
 		try {
-			Optional<TabDna> op = repository.findById(Arrays.toString(dna));			
-			if (op.isPresent()) {
-				throw new AlreadyExistsException("Cadena analizada, isMutant : " + op.get().isDnaIsMutant());
-			}
-			
+			op = repository.findById(Arrays.toString(dna));
 		} catch (Exception e) {
 			log.info(e.getLocalizedMessage());
 			throw new ErrorException("Error al consultar");
-		}	
-
-		String REGEX = env.getProperty("adn.secuencia.regex");
-		Integer NXN = Integer.valueOf(env.getProperty("adn.secuencia.nxn"));
-
-		List<String> cadenas = new ArrayList<String>();
-
-		/*
-		 * validando que los string cumplan con los carateres validos agregando las
-		 * cadenas una lista
-		 * 
-		 * @exception: genera una excepcion cuando un string no cumple con los
-		 * caracteres
-		 * 
-		 */
-		for (String str : dna) {
-			if (str.matches(REGEX)) {
-				cadenas.add(str.trim());
-			} else {
-				throw new BadRequestException("Caracter No valido en secuencia");
-			}
 		}
 
-		/*
-		 * validando que la lista contenga el tamaño correcto
-		 * 
-		 * @exception: genera una excepcion sino cumple con el tamaño correcto
-		 * 
-		 */
-		if (cadenas.size() != NXN) {
-			throw new BadRequestException("Cantidad de cadenas de adn , no validas ");
+		if (op.isPresent()) {
+			throw new AlreadyExistsException("Cadena analizada, isMutant : " + op.get().isDnaIsMutant());
 		}
 
-		/*
-		 * validando que los string cumplan con la longuitud correcta
-		 * 
-		 */
-		cadenas = cadenas.stream().filter(c -> c.length() == NXN).collect(Collectors.toList());
+	 
 
-		/*
-		 * validando que la lista contenga el tamaño correcto despues de el filtrado
-		 * 
-		 * @exception: genera una excepcion sino cumple con el tamaño correcto *
-		 */
-		if (cadenas.size() != NXN) {
-			throw new BadRequestException("longitud de cadenas de adn , no validas ");
+	String REGEX = env.getProperty("adn.secuencia.regex");
+	Integer NXN = Integer.valueOf(env.getProperty("adn.secuencia.nxn"));
+
+	List<String> cadenas = new ArrayList<String>();
+
+	/*
+	 * validando que los string cumplan con los carateres validos agregando las
+	 * cadenas una lista
+	 * 
+	 * @exception: genera una excepcion cuando un string no cumple con los
+	 * caracteres
+	 * 
+	 */
+	for(
+	String str:dna)
+	{
+		if (str.matches(REGEX)) {
+			cadenas.add(str.trim());
+		} else {
+			throw new BadRequestException("Caracter No valido en secuencia");
 		}
+	}
 
-		Integer COINCIDENCIA = Integer.valueOf(env.getProperty("adn.secuencia.coincidencias"));
+	/*
+	 * validando que la lista contenga el tamaño correcto
+	 * 
+	 * @exception: genera una excepcion sino cumple con el tamaño correcto
+	 * 
+	 */
+	if(cadenas.size()!=NXN)
+	{
+		throw new BadRequestException("Cantidad de cadenas de adn , no validas ");
+	}
 
-		/*
-		 * calculando si cabe la posibilidad de que se encentren dos o mas coincidecias
-		 * en un string
-		 * 
-		 */
-		double secuencias_internas = (double) NXN / COINCIDENCIA;
+	/*
+	 * validando que los string cumplan con la longuitud correcta
+	 * 
+	 */
+	cadenas=cadenas.stream().filter(c->c.length()==NXN).collect(Collectors.toList());
 
-		List<String> muestras = new ArrayList<>();
+	/*
+	 * validando que la lista contenga el tamaño correcto despues de el filtrado
+	 * 
+	 * @exception: genera una excepcion sino cumple con el tamaño correcto *
+	 */
+	if(cadenas.size()!=NXN)
+	{
+		throw new BadRequestException("longitud de cadenas de adn , no validas ");
+	}
 
-		/*
-		 * 
-		 * agregando lineas horizontales
-		 * 
-		 */
-		log.info(" agregando lineas horizontales");
-		muestras.addAll(generaSubCadenas(cadenas, COINCIDENCIA, secuencias_internas));
+	Integer COINCIDENCIA = Integer.valueOf(env.getProperty("adn.secuencia.coincidencias"));
+
+	/*
+	 * calculando si cabe la posibilidad de que se encentren dos o mas coincidecias
+	 * en un string
+	 * 
+	 */
+	double secuencias_internas = (double) NXN / COINCIDENCIA;
+
+	List<String> muestras = new ArrayList<>();
+
+	/*
+	 * 
+	 * agregando lineas horizontales
+	 * 
+	 */
+	log.info(" agregando lineas horizontales");muestras.addAll(generaSubCadenas(cadenas, COINCIDENCIA, secuencias_internas));
 		/*
 		 * agregando lineas oblicuas
 		 * 
